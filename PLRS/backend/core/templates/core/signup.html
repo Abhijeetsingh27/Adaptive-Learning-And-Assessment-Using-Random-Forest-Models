@@ -1,0 +1,258 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<style>
+  :root {
+    --auth-primary: #6366f1;
+    --auth-primary-dark: #4f46e5;
+    --auth-accent: #8b5cf6;
+    --auth-border: #e5e7eb;
+    --auth-text: #0f172a;
+    --auth-muted: #64748b;
+    --auth-bg-soft: #f8fafc;
+  }
+
+  .auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 2.5rem 0;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,0.18), transparent 60%),
+      radial-gradient(1000px 500px at 110% 10%, rgba(139,92,246,0.18), transparent 60%),
+      linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  }
+
+  .auth-card {
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 22px;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+      0 30px 60px -25px rgba(79,70,229,0.25),
+      0 10px 30px -10px rgba(15,23,42,0.08);
+    overflow: hidden;
+    animation: authFadeUp 0.6s ease-out both;
+  }
+
+  .auth-header {
+    position: relative;
+    padding: 2rem 2rem 1.25rem;
+    background: linear-gradient(135deg, var(--auth-primary), var(--auth-accent));
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+  }
+  .auth-header::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(400px 200px at 90% 0%, rgba(255,255,255,0.25), transparent 60%),
+      radial-gradient(300px 150px at 0% 100%, rgba(255,255,255,0.15), transparent 60%);
+    pointer-events: none;
+  }
+  .auth-icon {
+    width: 64px; height: 64px;
+    margin: 0 auto 0.85rem;
+    border-radius: 18px;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    font-size: 1.8rem;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.25);
+    animation: floatY 3.5s ease-in-out infinite;
+  }
+  .auth-header h2 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+    font-size: 1.75rem;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+  .auth-subtitle {
+    margin-top: 0.4rem;
+    opacity: 0.92;
+    font-size: 0.95rem;
+  }
+
+  .auth-body { padding: 2rem; }
+
+  /* Style Django's form.as_p output */
+  .auth-body form p {
+    margin-bottom: 1rem;
+  }
+  .auth-body form p label {
+    display: block;
+    font-weight: 600;
+    color: var(--auth-text);
+    margin-bottom: 0.4rem;
+    font-size: 0.92rem;
+  }
+  .auth-body form p input,
+  .auth-body form p select,
+  .auth-body form p textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--auth-border);
+    border-radius: 12px;
+    background: var(--auth-bg-soft);
+    color: var(--auth-text);
+    font-size: 0.98rem;
+    transition: all .2s ease;
+    outline: none;
+  }
+  .auth-body form p input:hover,
+  .auth-body form p select:hover,
+  .auth-body form p textarea:hover {
+    border-color: #c7d2fe;
+    background: #fff;
+  }
+  .auth-body form p input:focus,
+  .auth-body form p select:focus,
+  .auth-body form p textarea:focus {
+    border-color: var(--auth-primary);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
+  }
+  .auth-body form p .helptext,
+  .auth-body form p ul.errorlist,
+  .auth-body form p small {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--auth-muted);
+    margin-top: 0.35rem;
+    line-height: 1.4;
+  }
+  .auth-body form p ul.errorlist {
+    list-style: none;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.4rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    color: #b91c1c;
+  }
+
+  .submit-btn {
+    background: linear-gradient(135deg, var(--auth-primary), var(--auth-accent));
+    border: none;
+    border-radius: 14px;
+    padding: 0.95rem 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-size: 1rem;
+    color: #fff;
+    box-shadow: 0 18px 40px -16px rgba(99,102,241,0.6);
+    transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+    color: #fff;
+    box-shadow: 0 22px 50px -16px rgba(99,102,241,0.7);
+  }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    transition: left .6s ease;
+  }
+  .submit-btn:hover::after { left: 100%; }
+
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0 1rem;
+    color: var(--auth-muted);
+    font-size: 0.82rem;
+  }
+  .auth-divider::before,
+  .auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--auth-border);
+  }
+
+  .auth-footer {
+    text-align: center;
+    color: var(--auth-muted);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  .auth-footer a {
+    color: var(--auth-primary-dark);
+    font-weight: 600;
+    text-decoration: none;
+    position: relative;
+    transition: color .2s ease;
+  }
+  .auth-footer a::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: -2px;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--auth-primary), var(--auth-accent));
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform .3s ease;
+  }
+  .auth-footer a:hover { color: var(--auth-primary); }
+  .auth-footer a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  @keyframes authFadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes floatY {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-6px); }
+  }
+
+  @media (max-width: 576px) {
+    .auth-header { padding: 1.5rem; }
+    .auth-header h2 { font-size: 1.4rem; }
+    .auth-body { padding: 1.5rem; }
+  }
+</style>
+
+<div class="auth-wrapper">
+  <div class="row justify-content-center w-100 m-0">
+    <div class="col-md-6">
+      <div class="auth-card">
+        <div class="auth-header">
+          <!-- <div class="auth-icon">✨</div> -->
+          <h2>Create Account</h2>
+          <div class="auth-subtitle">Join us today — it only takes a minute</div>
+        </div>
+
+        <div class="auth-body">
+          <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn submit-btn w-100">Sign Up →</button>
+          </form>
+
+          <div class="auth-divider">or</div>
+
+          <p class="auth-footer">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

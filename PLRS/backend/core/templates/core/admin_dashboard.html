@@ -1,0 +1,336 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<style>
+  .dashboard-wrapper {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-15px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eef0f3;
+  }
+
+  .dashboard-header h2 {
+    font-weight: 700;
+    color: #1a2236;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .dashboard-header .badge-live {
+    background: #e8f7ee;
+    color: #1c8a4a;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .badge-live .dot {
+    width: 8px; height: 8px;
+    background: #1c8a4a;
+    border-radius: 50%;
+    animation: pulse 1.6s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.6; }
+  }
+
+  .stat-card {
+    border: none;
+    border-radius: 16px;
+    padding: 1.5rem !important;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInUp 0.6s ease-out backwards;
+  }
+  .stat-card:nth-child(1) .stat-card-inner { animation-delay: 0.05s; }
+  .stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px -12px rgba(0,0,0,0.25);
+  }
+
+  .stat-card .icon {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    font-size: 6rem;
+    opacity: 0.12;
+    line-height: 1;
+  }
+
+  .stat-card h3 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .stat-card p {
+    margin: 0.25rem 0 0;
+    opacity: 0.9;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+
+  .stat-card .label-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  .gradient-1 { background: linear-gradient(135deg, #1f2937 0%, #374151 100%); }
+  .gradient-2 { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+  .gradient-3 { background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%); }
+
+  .panel-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px -8px rgba(0,0,0,0.08);
+    transition: box-shadow 0.3s ease;
+    background: #fff;
+  }
+  .panel-card:hover {
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.15);
+  }
+
+  .panel-card h4 {
+    font-weight: 700;
+    color: #1a2236;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    border-bottom: 1px solid #f0f1f5;
+    padding-bottom: 0.85rem;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1.5px solid;
+    background: #fff;
+    transition: all 0.25s ease;
+    animation: slideIn 0.4s ease-out backwards;
+  }
+  .action-btn:nth-child(1) { animation-delay: 0.1s; }
+  .action-btn:nth-child(2) { animation-delay: 0.18s; }
+  .action-btn:nth-child(3) { animation-delay: 0.26s; }
+  .action-btn:nth-child(4) { animation-delay: 0.34s; }
+
+  .action-btn:hover {
+    transform: translateX(4px);
+    color: #fff !important;
+  }
+  .action-btn .arrow {
+    transition: transform 0.25s ease;
+  }
+  .action-btn:hover .arrow { transform: translateX(4px); }
+
+  .btn-dark-outline { border-color: #1f2937; color: #1f2937; }
+  .btn-dark-outline:hover { background: #1f2937; }
+
+  .btn-primary-outline { border-color: #4f46e5; color: #4f46e5; }
+  .btn-primary-outline:hover { background: #4f46e5; }
+
+  .btn-success-outline { border-color: #16a34a; color: #16a34a; }
+  .btn-success-outline:hover { background: #16a34a; }
+
+  .btn-warning-outline { border-color: #d97706; color: #d97706; }
+  .btn-warning-outline:hover { background: #d97706; }
+
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-row .label {
+    color: #6b7280;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .metric-row .value {
+    font-weight: 700;
+    color: #1a2236;
+    font-size: 1.05rem;
+  }
+
+  .metric-bar {
+    height: 6px;
+    width: 90px;
+    background: #f0f1f5;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-right: 0.75rem;
+  }
+  .metric-bar > span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    border-radius: 999px;
+    transition: width 1s ease;
+  }
+
+  .retrain-btn {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border: none;
+    border-radius: 10px;
+    padding: 0.85rem 1.25rem;
+    font-weight: 600;
+    color: #fff;
+    width: 100%;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 18px -6px rgba(239,68,68,0.5);
+  }
+  .retrain-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -8px rgba(239,68,68,0.65);
+    color: #fff;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 1.5rem;
+    color: #9ca3af;
+    background: #fafbfc;
+    border-radius: 10px;
+    border: 1px dashed #e5e7eb;
+  }
+</style>
+
+<div class="dashboard-wrapper">
+  <div class="dashboard-header">
+    <h2>📊 Admin Dashboard</h2>
+    <span class="badge-live"><span class="dot"></span> Live</span>
+  </div>
+
+  <div class="row mb-4 g-3">
+    <div class="col-md-4">
+      <div class="card stat-card gradient-1">
+        <span class="label-tag">Users</span>
+        <h3>{{ stats.total_students }}</h3>
+        <p>Total Students</p>
+        <span class="icon">👥</span>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card stat-card gradient-2">
+        <span class="label-tag">Content</span>
+        <h3>{{ stats.total_topics }}</h3>
+        <p>Topics Created</p>
+        <span class="icon">📚</span>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card stat-card gradient-3">
+        <span class="label-tag">Performance</span>
+        <h3>{{ stats.avg_engagement|floatformat:1 }}</h3>
+        <p>Avg Engagement Score</p>
+        <span class="icon">⚡</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4 g-3">
+    <div class="col-md-6">
+      <div class="card panel-card p-4 h-100">
+        <h4>⚙️ Management</h4>
+        <div class="d-grid gap-2 mt-3">
+          <a href="{% url 'manage_topics' %}" class="action-btn btn-dark-outline">
+            <span>📁 Manage Topics & Material</span>
+            <span class="arrow">→</span>
+          </a>
+          <a href="{% url 'add_topic' %}" class="action-btn btn-primary-outline">
+            <span>➕ Add New Topic</span>
+            <span class="arrow">→</span>
+          </a>
+          <a href="{% url 'add_material' %}" class="action-btn btn-success-outline">
+            <span>📄 Add Material</span>
+            <span class="arrow">→</span>
+          </a>
+          <a href="{% url 'add_question' %}" class="action-btn btn-warning-outline">
+            <span>❓ Add Quiz Question</span>
+            <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card panel-card p-4 h-100">
+        <h4>🧠 ML System Health</h4>
+        {% if metrics %}
+        <div class="mt-2">
+          <div class="metric-row">
+            <span class="label">🎯 Accuracy</span>
+            <span class="value">{{ metrics.accuracy|floatformat:2 }}</span>
+          </div>
+          <div class="metric-row">
+            <span class="label">🔍 Precision</span>
+            <span class="value">{{ metrics.precision_score|floatformat:2 }}</span>
+          </div>
+          <div class="metric-row">
+            <span class="label">📈 Recall</span>
+            <span class="value">{{ metrics.recall_score|floatformat:2 }}</span>
+          </div>
+          <div class="metric-row">
+            <span class="label">📉 RMSE</span>
+            <span class="value">{{ metrics.rmse|floatformat:2 }}</span>
+          </div>
+          <div class="metric-row">
+            <span class="label">🕒 Last Updated</span>
+            <span class="value" style="font-size:0.9rem; color:#6b7280;">{{ metrics.updated_at|date:"M d, H:i" }}</span>
+          </div>
+        </div>
+        {% else %}
+        <div class="empty-state mt-3">
+          <div style="font-size:2rem;">📭</div>
+          <p class="mb-0 mt-2">No metrics available yet.</p>
+        </div>
+        {% endif %}
+        <a href="{% url 'trigger_retrain' %}" class="retrain-btn mt-4 text-center d-block text-decoration-none">
+          🔄 Trigger Retraining
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

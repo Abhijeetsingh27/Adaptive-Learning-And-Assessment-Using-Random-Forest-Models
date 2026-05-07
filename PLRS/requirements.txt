@@ -1,0 +1,9 @@
+django
+flask
+mysqlclient
+scikit-learn
+pandas
+numpy
+joblib
+requests
+gunicorn

@@ -1,0 +1,389 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<style>
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-12px); }
+  }
+  @keyframes blob {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33%      { transform: translate(30px,-40px) scale(1.1); }
+    66%      { transform: translate(-25px,20px) scale(0.95); }
+  }
+  @keyframes shine {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    color: #fff;
+    padding: 5rem 2.5rem;
+    border-radius: 28px !important;
+    overflow: hidden;
+    box-shadow: 0 30px 80px -30px rgba(102,126,234,0.55);
+    animation: fadeInUp 0.7s ease-out;
+  }
+
+  .hero::before, .hero::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .hero::before {
+    width: 320px; height: 320px;
+    background: #f093fb;
+    top: -80px; right: -60px;
+    animation: blob 14s ease-in-out infinite;
+  }
+  .hero::after {
+    width: 260px; height: 260px;
+    background: #667eea;
+    bottom: -100px; left: -40px;
+    animation: blob 18s ease-in-out infinite reverse;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.3px;
+  }
+  .hero-badge .dot {
+    width: 8px; height: 8px;
+    background: #4ade80;
+    border-radius: 50%;
+    animation: pulse 1.6s infinite;
+  }
+
+  .hero h1 {
+    font-weight: 800 !important;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  }
+  .hero h1 .accent {
+    background: linear-gradient(90deg, #fff, #fde68a, #fff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 4s linear infinite;
+  }
+
+  .hero p.lead {
+    font-size: 1.2rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-hero {
+    background: #fff;
+    color: #667eea;
+    border: none;
+    padding: 0.95rem 2.25rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+    box-shadow: 0 12px 30px -10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+  }
+  .btn-hero:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 38px -12px rgba(0,0,0,0.4);
+    color: #764ba2;
+  }
+  .btn-hero .arrow { transition: transform 0.3s ease; }
+  .btn-hero:hover .arrow { transform: translateX(5px); }
+
+  .hero-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-stat .num {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #fff;
+  }
+  .hero-stat .lbl {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.85;
+  }
+
+  /* ===== SECTION TITLE ===== */
+  .section-title {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.6s ease-out;
+  }
+  .section-title .eyebrow {
+    color: #667eea;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  .section-title h2 {
+    font-weight: 800;
+    color: #1a2236;
+    font-size: 2rem;
+    margin: 0;
+  }
+  .section-title p {
+    color: #6b7280;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+  }
+
+  /* ===== FEATURE CARDS ===== */
+  .feature-card {
+    border: none !important;
+    border-radius: 20px !important;
+    background: #fff;
+    padding: 2.25rem 1.75rem !important;
+    height: 100%;
+    text-align: center;
+    box-shadow: 0 10px 30px -15px rgba(0,0,0,0.1);
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out backwards;
+  }
+  .col-md-4:nth-child(1) .feature-card { animation-delay: 0.1s; }
+  .col-md-4:nth-child(2) .feature-card { animation-delay: 0.25s; }
+  .col-md-4:nth-child(3) .feature-card { animation-delay: 0.4s; }
+
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px -15px rgba(102,126,234,0.25);
+  }
+  .feature-card:hover::after { transform: scaleX(1); }
+
+  .feature-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 1.25rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #fff;
+    box-shadow: 0 14px 28px -10px rgba(0,0,0,0.2);
+    animation: float 4s ease-in-out infinite;
+  }
+  .feature-card:nth-of-type(1) .feature-icon,
+  .col-md-4:nth-child(1) .feature-icon { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .col-md-4:nth-child(2) .feature-icon { background: linear-gradient(135deg, #f093fb, #f5576c); animation-delay: 0.4s; }
+  .col-md-4:nth-child(3) .feature-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); animation-delay: 0.8s; }
+
+  .feature-card h3 {
+    font-weight: 700;
+    color: #1a2236;
+    font-size: 1.25rem;
+    margin-bottom: 0.6rem;
+  }
+  .feature-card p {
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .feature-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #667eea;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s ease;
+  }
+  .feature-card:hover .feature-tag {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===== TRUST BAR ===== */
+  .trust-bar {
+    margin-top: 4rem;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px -15px rgba(0,0,0,0.08);
+    text-align: center;
+    animation: fadeInUp 0.6s ease-out 0.5s backwards;
+  }
+  .trust-bar .label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #9ca3af;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .trust-bar .icons {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    font-size: 1.4rem;
+    color: #1a2236;
+    font-weight: 600;
+  }
+  .trust-bar .icons span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.25s ease;
+  }
+  .trust-bar .icons span:hover { opacity: 1; }
+
+  @media (max-width: 575px) {
+    .hero { padding: 3.5rem 1.5rem; }
+    .hero-stats { gap: 1.25rem; }
+  }
+</style>
+
+<!-- ===== HERO ===== -->
+<div class="hero rounded-3 mb-5">
+  <div class="hero-content">
+    <span class="hero-badge"><span class="dot"></span> Powered by Random Forest AI</span>
+    <h1 class="display-4 fw-bold">Master Your <span class="accent">Learning Journey</span></h1>
+    <p class="lead">AI-powered personalized recommendations to help you learn faster and better.</p>
+
+    <div class="hero-cta-row">
+      <a href="{% url 'signup' %}" class="btn-hero">
+         Get Started <span class="arrow">→</span>
+      </a>
+      <a href="{% url 'login' %}" style="color:#fff; font-weight:600; text-decoration:none; opacity:0.95;">
+        Already have an account? <u>Sign in</u>
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num">10K+</div>
+        <div class="lbl">Active Learners</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">95%</div>
+        <div class="lbl">Accuracy</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">24/7</div>
+        <div class="lbl">AI Support</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FEATURES ===== -->
+<div class="section-title">
+  <div class="eyebrow">Why Choose Us</div>
+  <h2>Everything you need to succeed</h2>
+  <p>Smart features designed around how you actually learn</p>
+</div>
+
+<div class="row text-center g-4">
+  <div class="col-md-4">
+    <div class="card feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>Adaptive Quizzes</h3>
+      <p>Difficulty adjusts automatically based on your performance.</p>
+      <span class="feature-tag">Smart Difficulty →</span>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>AI Recommendations</h3>
+      <p>Our ML engine suggests the best topics for you to study next.</p>
+      <span class="feature-tag">Powered by ML →</span>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Real-time Analytics</h3>
+      <p>Track your progress and identify weak spots instantly.</p>
+      <span class="feature-tag">Live Insights →</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TRUST BAR ===== -->
+<div class="trust-bar">
+  <div class="label">Built with cutting-edge technology</div>
+  <div class="icons">
+    <span>🌲 Random Forest</span>
+    <span>🐍 Python</span>
+    <span>🧠 Machine Learning</span>
+    <span>⚡ Real-time</span>
+    <span>🔒 Secure</span>
+  </div>
+</div>
+{% endblock %}

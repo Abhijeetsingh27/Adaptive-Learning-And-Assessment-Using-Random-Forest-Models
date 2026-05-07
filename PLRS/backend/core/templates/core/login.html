@@ -1,0 +1,300 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<style>
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-10px) rotate(3deg); }
+  }
+  @keyframes shine {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes blob {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50%      { transform: translate(20px,-30px) scale(1.1); }
+  }
+
+  .auth-wrapper {
+    animation: fadeInUp 0.6s ease-out;
+    padding: 1rem 0;
+  }
+
+  .auth-card {
+    border: none !important;
+    border-radius: 24px !important;
+    background: #fff;
+    box-shadow: 0 25px 70px -25px rgba(102,126,234,0.35);
+    overflow: hidden;
+    position: relative;
+    padding: 0 !important;
+  }
+
+  .auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #667eea);
+    background-size: 200% auto;
+    animation: shine 4s linear infinite;
+    z-index: 3;
+  }
+
+  /* Decorative gradient header */
+  .auth-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2.5rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-banner::before, .auth-banner::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.4;
+  }
+  .auth-banner::before {
+    width: 180px; height: 180px;
+    background: #f093fb;
+    top: -60px; right: -40px;
+    animation: blob 12s ease-in-out infinite;
+  }
+  .auth-banner::after {
+    width: 140px; height: 140px;
+    background: #4facfe;
+    bottom: -50px; left: -30px;
+    animation: blob 15s ease-in-out infinite reverse;
+  }
+
+  .auth-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: #fff;
+    box-shadow: 0 12px 30px -10px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 2;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .auth-banner h2 {
+    color: #fff;
+    font-weight: 800;
+    margin: 0;
+    font-size: 1.8rem;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .auth-banner .subtitle {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.95rem;
+    margin-top: 0.4rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .auth-body {
+    padding: 2.5rem 2.5rem 2rem;
+    margin-top: -2rem;
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+  }
+
+  /* Style auto-rendered Django form */
+  .auth-body form p {
+    margin-bottom: 1.15rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .auth-body label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .auth-body input[type="text"],
+  .auth-body input[type="email"],
+  .auth-body input[type="password"] {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fafbfc;
+    color: #1a2236;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+    font-family: inherit;
+  }
+
+  .auth-body input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(102,126,234,0.12);
+  }
+
+  .auth-body .helptext {
+    display: block;
+    margin-top: 0.4rem;
+    color: #9ca3af;
+    font-size: 0.78rem;
+  }
+
+  .auth-body .errorlist {
+    list-style: none;
+    padding: 0.6rem 0.85rem;
+    margin: 0.4rem 0 0;
+    background: #fef2f2;
+    border-left: 3px solid #dc2626;
+    border-radius: 8px;
+    color: #b91c1c;
+    font-size: 0.85rem;
+  }
+
+  .login-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: #fff;
+    padding: 0.95rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    box-shadow: 0 12px 25px -10px rgba(102,126,234,0.6);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px -10px rgba(102,126,234,0.75);
+    color: #fff;
+  }
+  .login-btn:active { transform: translateY(0); }
+  .login-btn .arrow { transition: transform 0.25s ease; }
+  .login-btn:hover .arrow { transform: translateX(4px); }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0 1rem;
+    color: #9ca3af;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+  }
+
+  .signup-prompt {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.92rem;
+    margin: 0;
+  }
+  .signup-prompt a {
+    color: #667eea;
+    font-weight: 700;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.2s ease;
+  }
+  .signup-prompt a:hover { color: #764ba2; }
+  .signup-prompt a::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+  .signup-prompt a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .secure-note {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.78rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+  }
+
+  @media (max-width: 575px) {
+    .auth-body { padding: 2rem 1.5rem 1.75rem; }
+    .auth-banner { padding: 2rem 1.5rem 3.5rem; }
+    .auth-banner h2 { font-size: 1.5rem; }
+  }
+</style>
+
+<div class="row justify-content-center auth-wrapper">
+  <div class="col-md-6 col-lg-5">
+    <div class="card auth-card">
+      <!-- Gradient banner -->
+      <div class="auth-banner">
+        <!-- <div class="auth-icon">🔐</div> -->
+        <h2>Sign In</h2>
+        <div class="subtitle">Welcome back! Continue your learning journey.</div>
+      </div>
+
+      <!-- Form body -->
+      <div class="auth-body">
+        <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+
+          <button type="submit" class="login-btn">
+            Login <span class="arrow">→</span>
+          </button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <p class="signup-prompt">
+          Don't have an account? <a href="{% url 'signup' %}">Sign up per</a>
+        </p>
+
+        <div class="secure-note">
+          🔒 Your connection is secure and encrypted
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

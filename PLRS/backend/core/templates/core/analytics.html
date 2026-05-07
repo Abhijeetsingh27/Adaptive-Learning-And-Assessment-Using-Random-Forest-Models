@@ -1,0 +1,355 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<style>
+  .analytics-wrapper {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  .analytics-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 2px solid #eef0f3;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .analytics-header h2 {
+    font-weight: 700;
+    color: #1a2236;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.85rem;
+  }
+
+  .analytics-header .subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin-top: 0.3rem;
+    font-weight: 400;
+  }
+
+  .live-pill {
+    background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+    color: #5b21b6;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 12px -4px rgba(91,33,182,0.2);
+  }
+
+  .live-pill .dot {
+    width: 8px; height: 8px;
+    background: #7c3aed;
+    border-radius: 50%;
+    animation: pulse 1.6s infinite;
+  }
+
+  .stat-mini-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .stat-mini-row { grid-template-columns: 1fr; }
+  }
+
+  .stat-mini {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+    box-shadow: 0 4px 18px -10px rgba(0,0,0,0.1);
+    border-left: 4px solid;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    animation: fadeInUp 0.5s ease-out backwards;
+  }
+  .stat-mini:nth-child(1) { animation-delay: 0.1s; border-color: #667eea; }
+  .stat-mini:nth-child(2) { animation-delay: 0.2s; border-color: #10b981; }
+  .stat-mini:nth-child(3) { animation-delay: 0.3s; border-color: #f59e0b; }
+
+  .stat-mini:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px -10px rgba(0,0,0,0.18);
+  }
+
+  .stat-mini .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6b7280;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .stat-mini .value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a2236;
+    margin-top: 0.3rem;
+  }
+
+  .stat-mini .trend {
+    font-size: 0.8rem;
+    color: #10b981;
+    font-weight: 600;
+    margin-top: 0.2rem;
+  }
+
+  .chart-card {
+    border: none;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 10px 40px -15px rgba(0,0,0,0.12);
+    overflow: hidden;
+    position: relative;
+    animation: fadeInUp 0.7s ease-out 0.2s backwards;
+  }
+
+  .chart-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+  }
+
+  .chart-card-header {
+    padding: 1.5rem 1.75rem 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .chart-card-header h4 {
+    font-weight: 700;
+    color: #1a2236;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.15rem;
+  }
+
+  .chart-card-header .desc {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+
+  .legend-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #f5f3ff;
+    color: #5b21b6;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .legend-tag .swatch {
+    width: 10px; height: 10px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 3px;
+  }
+
+  .chart-container {
+    padding: 1rem 1.5rem 1.75rem;
+    position: relative;
+    min-height: 360px;
+  }
+
+  .chart-loader {
+    position: absolute;
+    inset: 1rem 1.5rem 1.75rem;
+    background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+    background-size: 1000px 100%;
+    animation: shimmer 1.8s infinite linear;
+    border-radius: 12px;
+    z-index: 1;
+  }
+
+  .chart-footer {
+    padding: 1rem 1.75rem 1.5rem;
+    border-top: 1px solid #f0f1f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #6b7280;
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chart-footer .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+</style>
+
+<div class="analytics-wrapper">
+  <div class="analytics-header">
+    <div>
+      <h2>📈 My Performance Analytics</h2>
+      <div class="subtitle">Track your quiz progress and learning trends over time</div>
+    </div>
+    <span class="live-pill"><span class="dot"></span> Real-time Data</span>
+  </div>
+
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
+      <div class="card chart-card">
+        <div class="chart-card-header">
+          <div>
+            <h4>📊 Quiz Score Progression</h4>
+            <div class="desc">Your quiz performance trend across attempts</div>
+          </div>
+          <span class="legend-tag"><span class="swatch"></span> Quiz Scores (%)</span>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-loader" id="chartLoader"></div>
+          <canvas id="quizChart"></canvas>
+        </div>
+
+        <div class="chart-footer">
+          <span class="meta">🕒 Auto-updated from your latest attempts</span>
+          <span class="meta">📍 Scale: 0 – 100%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    fetch('{% url "analytics_data" %}')
+      .then(response => response.json())
+      .then(data => {
+        const loader = document.getElementById('chartLoader');
+        if (loader) loader.style.display = 'none';
+
+        const ctx = document.getElementById('quizChart').getContext('2d');
+
+        // Premium gradient fill
+        const gradient = ctx.createLinearGradient(0, 0, 0, 360);
+        gradient.addColorStop(0, 'rgba(102, 126, 234, 0.45)');
+        gradient.addColorStop(0.5, 'rgba(118, 75, 162, 0.18)');
+        gradient.addColorStop(1, 'rgba(102, 126, 234, 0.02)');
+
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'Quiz Scores (%)',
+              data: data.scores,
+              borderColor: '#667eea',
+              borderWidth: 3,
+              tension: 0.4,
+              fill: true,
+              backgroundColor: gradient,
+              pointBackgroundColor: '#fff',
+              pointBorderColor: '#667eea',
+              pointBorderWidth: 2.5,
+              pointRadius: 5,
+              pointHoverRadius: 8,
+              pointHoverBackgroundColor: '#764ba2',
+              pointHoverBorderColor: '#fff',
+              pointHoverBorderWidth: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(26, 34, 54, 0.95)',
+                titleColor: '#fff',
+                bodyColor: '#e5e7eb',
+                titleFont: { weight: '600', size: 13 },
+                bodyFont: { size: 13 },
+                padding: 12,
+                borderColor: '#667eea',
+                borderWidth: 1,
+                cornerRadius: 10,
+                displayColors: true,
+                boxPadding: 5,
+                callbacks: {
+                  label: function(context) {
+                    return '  Score: ' + context.parsed.y + '%';
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                  color: '#6b7280',
+                  font: { size: 12, weight: '500' },
+                  callback: function(value) { return value + '%'; }
+                },
+                grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false }
+              },
+              x: {
+                ticks: {
+                  color: '#6b7280',
+                  font: { size: 12, weight: '500' }
+                },
+                grid: { display: false }
+              }
+            },
+            animation: {
+              duration: 1400,
+              easing: 'easeOutQuart'
+            }
+          }
+        });
+      })
+      .catch(err => {
+        const loader = document.getElementById('chartLoader');
+        if (loader) {
+          loader.style.animation = 'none';
+          loader.style.background = '#fef2f2';
+          loader.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#dc2626;font-weight:600;">⚠️ Unable to load analytics data</div>';
+        }
+      });
+  });
+</script>
+{% endblock %}
