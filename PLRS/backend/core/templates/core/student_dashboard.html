@@ -299,28 +299,28 @@
     <div class="row g-3 mb-4">
       <div class="col-md-3 stat-col">
         <div class="stat-card stat-primary">
-          <div class="stat-icon">📊</div>
+          
           <h5>Current Level</h5>
           <h2>{{ student.current_level|title }}</h2>
         </div>
       </div>
       <div class="col-md-3 stat-col">
         <div class="stat-card stat-success">
-          <div class="stat-icon">⚡</div>
+         
           <h5>Engagement Score</h5>
           <h2>{{ student.engagement_score|floatformat:1 }}</h2>
         </div>
       </div>
       <div class="col-md-3 stat-col">
         <div class="stat-card stat-info">
-          <div class="stat-icon">🧠</div>
+          
           <h5>Learning State</h5>
           <h2>{{ student.learning_state|title }}</h2>
         </div>
       </div>
       <div class="col-md-3 stat-col">
         <div class="stat-card stat-warning">
-          <div class="stat-icon">🎯</div>
+        
           <h5>Actions</h5>
           <a href="{% url 'topic_list' %}" class="btn btn-light btn-sm mt-2">Browse All Topics →</a>
         </div>
@@ -332,7 +332,7 @@
 
         <div class="panel">
           <div class="panel-title">
-            <span class="pt-icon">✨</span>
+           
             Recommended for You
           </div>
           {% if recommended_topic %}
@@ -343,9 +343,9 @@
             <hr>
             <div class="d-flex gap-2 flex-wrap">
               {% for mat in recommended_topic.materials.all %}
-              <a href="{% url 'read_material' mat.id %}" class="btn btn-soft">📖 Read: {{ mat.title }}</a>
+              <a href="{% url 'read_material' mat.id %}" class="btn btn-soft"> Read: {{ mat.title }}</a>
               {% endfor %}
-              <a href="{% url 'take_quiz' recommended_topic.id %}" class="btn btn-grad">🚀 Take Quiz</a>
+              <a href="{% url 'take_quiz' recommended_topic.id %}" class="btn btn-grad"> Take Quiz</a>
             </div>
           </div>
           {% else %}
@@ -355,7 +355,7 @@
 
         <div class="panel">
           <div class="panel-title">
-            <span class="pt-icon">📈</span>
+           
             Recent Activity
           </div>
           <div class="table-responsive">

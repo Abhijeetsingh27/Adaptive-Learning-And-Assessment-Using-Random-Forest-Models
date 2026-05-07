@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import os
 import json
-from train_model import train
+from train_model import train, add_simple_features
 
 app = Flask(__name__)
 MODEL_DIR = 'models'
@@ -13,13 +13,15 @@ MODEL_DIR = 'models'
 clf = None
 reg = None
 scaler = None
+selector = None
 
 def load_models():
-    global clf, reg, scaler
+    global clf, reg, scaler, selector
     try:
         clf = joblib.load(os.path.join(MODEL_DIR, 'rf_classifier.pkl'))
         reg = joblib.load(os.path.join(MODEL_DIR, 'rf_regressor.pkl'))
         scaler = joblib.load(os.path.join(MODEL_DIR, 'scaler.pkl'))
+        selector = joblib.load(os.path.join(MODEL_DIR, 'selector.pkl'))
         print("Models loaded successfully.")
     except FileNotFoundError:
         print("Models not found. Training initial models...")
@@ -27,6 +29,7 @@ def load_models():
         clf = joblib.load(os.path.join(MODEL_DIR, 'rf_classifier.pkl'))
         reg = joblib.load(os.path.join(MODEL_DIR, 'rf_regressor.pkl'))
         scaler = joblib.load(os.path.join(MODEL_DIR, 'scaler.pkl'))
+        selector = joblib.load(os.path.join(MODEL_DIR, 'selector.pkl'))
 
 load_models()
 
@@ -47,21 +50,27 @@ def predict():
             
         print(f"Model expects features: {feature_names}")
 
+        # Put request data in a DataFrame to apply engineering
+        input_df = pd.DataFrame([data])
+        
+        # Add engineered features using the function from train_model
+        input_df = add_simple_features(input_df)
+
         # Prepare features in correct order
         features = []
         for feat in feature_names:
-            val = data.get(feat)
-            if val is None:
-                # Default values if missing
-                features.append(0)
+            if feat in input_df.columns:
+                val = input_df[feat].iloc[0]
+                features.append(float(val) if not pd.isna(val) else 0.0)
             else:
-                features.append(float(val))
+                features.append(0.0)
                 
         features_array = np.array([features])
         features_scaled = scaler.transform(features_array)
+        features_selected = selector.transform(features_scaled)
         
-        class_pred = clf.predict(features_scaled)[0]
-        reg_pred = reg.predict(features_scaled)[0]
+        class_pred = clf.predict(features_selected)[0]
+        reg_pred = reg.predict(features_selected)[0]
         
         # Heuristic for recommended level
         # If state is 'confusion' or 'guessing', recommend easier level or revisit topic

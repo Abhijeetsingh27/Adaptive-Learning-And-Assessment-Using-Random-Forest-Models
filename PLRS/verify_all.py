@@ -11,10 +11,10 @@ def check_flask():
         print(f"Flask Service responded with code: {response.status_code}")
         return True
     except requests.exceptions.ConnectionError:
-        print("❌ Flask Service NOT reachable on port 5000")
+        print(" Flask Service NOT reachable on port 5000")
         return False
     except Exception as e:
-        print(f"⚠️ Flask Service error: {e}")
+        print(f" Flask Service error: {e}")
         return False
 
 def check_django():
@@ -24,10 +24,10 @@ def check_django():
         print(f"Django Backend responded with code: {response.status_code}")
         return True
     except requests.exceptions.ConnectionError:
-        print("❌ Django Backend NOT reachable on port 8000")
+        print(" Django Backend NOT reachable on port 8000")
         return False
     except Exception as e:
-        print(f"⚠️ Django Backend error: {e}")
+        print(f" Django Backend error: {e}")
         return False
 
 if __name__ == "__main__":
@@ -35,8 +35,8 @@ if __name__ == "__main__":
     django_ok = check_django()
     
     if flask_ok and django_ok:
-        print("\n✅ BOTH SERVICES ARE RUNNING!")
+        print("\n BOTH SERVICES ARE RUNNING!")
         sys.exit(0)
     else:
-        print("\n❌ ONE OR MORE SERVICES FAILED.")
+        print("\n ONE OR MORE SERVICES FAILED.")
         sys.exit(1)

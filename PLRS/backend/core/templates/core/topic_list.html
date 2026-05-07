@@ -240,7 +240,7 @@
     <div class="topics-head">
       <div>
         <h2>
-          <span class="head-icon">📚</span>
+        
           All Topics
         </h2>
         <div class="head-sub">Explore lessons and test your knowledge with quizzes</div>
@@ -253,7 +253,7 @@
       <div class="col-md-4 mb-4 topic-col">
         <div class="card topic-card">
           <div class="card-body">
-            <div class="topic-thumb">📘</div>
+            <!-- <div class="topic-thumb"></div> -->
             <h5 class="card-title">{{ topic.name }}</h5>
             <span class="difficulty-pill">
               <span class="dot"></span>
@@ -265,13 +265,13 @@
             <div class="d-grid gap-2">
               {% for mat in topic.materials.all %}
               <a href="{% url 'read_material' mat.id %}" class="btn btn-read">
-                <span>📖 Read: {{ mat.title }}</span>
+                <span> Read: {{ mat.title }}</span>
                 <span class="arrow">→</span>
               </a>
               {% empty %}
               <span class="no-material">No reading material yet</span>
               {% endfor %}
-              <a href="{% url 'take_quiz' topic.id %}" class="btn btn-quiz">🚀 Take Quiz</a>
+              <a href="{% url 'take_quiz' topic.id %}" class="btn btn-quiz"> Take Quiz</a>
             </div>
           </div>
         </div>

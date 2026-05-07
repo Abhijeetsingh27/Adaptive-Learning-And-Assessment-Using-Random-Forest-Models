@@ -40,7 +40,7 @@ def test_ml_service():
         response = requests.post(url, json=payload, timeout=5)
         if response.status_code == 200:
             data = response.json()
-            print("\n✅ Success! Received Response:")
+            print("\n Success! Received Response:")
             print(json.dumps(data, indent=2))
             
             # Validation
@@ -48,18 +48,18 @@ def test_ml_service():
             missing = [k for k in required_keys if k not in data]
             
             if missing:
-                print(f"❌ FAILED: Missing keys in response: {missing}")
+                print(f" FAILED: Missing keys in response: {missing}")
             else:
-                print("✅ Response structure is correct.")
+                print(" Response structure is correct.")
                 print(f"   - Learning State: {data['learning_state']}")
                 print(f"   - Engagement (Next Score): {data['next_score_prediction']}")
                 print(f"   - Recommended Level: {data['recommended_level']}")
         else:
-            print(f"❌ FAILED: Status Code {response.status_code}")
+            print(f" FAILED: Status Code {response.status_code}")
             print(response.text)
             
     except Exception as e:
-        print(f"❌ FAILED: Connection Check. Is Flask running? Error: {e}")
+        print(f" FAILED: Connection Check. Is Flask running? Error: {e}")
 
 if __name__ == "__main__":
     test_ml_service()
