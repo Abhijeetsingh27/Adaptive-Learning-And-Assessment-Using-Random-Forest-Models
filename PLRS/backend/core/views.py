@@ -15,9 +15,9 @@ from django.contrib.auth.forms import AuthenticationForm
 ML_API_URL = "http://127.0.0.1:5000"
 
 # --- Helper Functions ---
-def call_ml_api(endpoint, data):
+def call_ml_api(endpoint, data, timeout=2):
     try:
-        response = requests.post(f"{ML_API_URL}{endpoint}", json=data, timeout=2)
+        response = requests.post(f"{ML_API_URL}{endpoint}", json=data, timeout=timeout)
         if response.status_code == 200:
             return response.json()
     except requests.exceptions.RequestException:
@@ -313,7 +313,7 @@ def add_question(request):
 @login_required
 def trigger_retrain(request):
     if not request.user.is_admin(): return redirect('student_dashboard')
-    response = call_ml_api('/retrain', {})
+    response = call_ml_api('/retrain', {}, timeout=60)
     if response:
         # Update Metrics in DB
         metrics = response.get('metrics', {})
